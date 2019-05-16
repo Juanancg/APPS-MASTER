@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name" translatable="false">Ejemplo PAS</string>
+    <string name="msg_texto">BIenvenido</string>
+</resources>
