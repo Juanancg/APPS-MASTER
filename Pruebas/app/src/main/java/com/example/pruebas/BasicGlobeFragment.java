@@ -29,9 +29,9 @@ public class BasicGlobeFragment extends Fragment {
     /**
      * Creates a new WorldWindow (GLSurfaceView) object.
      */
-    public WorldWindow createWorldWindow() {
+    public WorldWindow createWorldWindow(Context prueba) {
         // Create the WorldWindow (a GLSurfaceView) which displays the globe.
-        Context prueba = getContext();
+        //Context prueba = getContext();
         this.wwd = new WorldWindow(prueba);
         // Setup the WorldWindow's layers.
         this.wwd.getLayers().addLayer(new BackgroundLayer());
@@ -40,6 +40,14 @@ public class BasicGlobeFragment extends Fragment {
         this.wwd.getGlobe().getElevationModel().addCoverage(new BasicElevationCoverage());
         return this.wwd;
     }
+
+    public void move(){
+
+        this.wwd.getNavigator().setLatitude(13.22);
+        this.wwd.getNavigator().setLongitude(61.10);
+        this.wwd.requestRedraw();
+    }
+
 
     /**
      * Gets the WorldWindow (GLSurfaceView) object.
@@ -51,14 +59,15 @@ public class BasicGlobeFragment extends Fragment {
     /**
      * Adds the WorldWindow to this Fragment's layout.
      */
-    @Nullable
-    @Override
+    //@Nullable
+    //@Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_globe, container, false);
         FrameLayout globeLayout = (FrameLayout) rootView.findViewById(R.id.globe);
 
         // Add the WorldWindow view object to the layout that was reserved for the globe.
-        globeLayout.addView(this.createWorldWindow());
+        Context prueba = getContext();
+        globeLayout.addView(this.createWorldWindow(prueba));
 
         return rootView;
     }

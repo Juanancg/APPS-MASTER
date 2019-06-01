@@ -1,5 +1,7 @@
 package com.example.pruebas;
 
+import android.content.Context;
+
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.geom.LookAt;
@@ -11,11 +13,11 @@ public class LookAtViewFragment extends BasicGlobeFragment {
     /**
      * Creates a new WorldWindow with its camera configured to look at a given location from a given position.
      */
-    @Override
-    public WorldWindow createWorldWindow() {
-        // Let the super class (BasicGlobeFragment) do the creation
-        WorldWindow wwd = super.createWorldWindow();
 
+    public WorldWindow createWorldWindow(Context prueba) {
+        // Let the super class (BasicGlobeFragment) do the creation
+        // WorldWindow wwd = super.createWorldWindow();
+        WorldWindow wwd = new WorldWindow(prueba);
         // Create a view of LAX airport as seen from an aircraft above Santa Monica, CA.
         Position aircraft = new Position(34.0158333, -118.4513056, 2500);   // Aircraft above Santa Monica airport, altitude in meters
         Position airport = new Position(33.9424368, -118.4081222, 38.7);    // LAX airport, Los Angeles CA, altitude MSL

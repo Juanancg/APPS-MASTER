@@ -54,7 +54,7 @@ public class CameraViewFragment extends BasicGlobeFragment {
 
         Camera camera = new Camera();
         //camera.set(aircraft.latitude, aircraft.longitude, aircraft.altitude, WorldWind.ABSOLUTE, heading, tilt, 0); // No roll
-        camera.set(0, 0, 0, 0, 0, 0, 0); // No roll
+        camera.set(0, 0, 0, WorldWind.ABSOLUTE,0, 0, 0); // No roll
 
         // Apply the view
         wwd.getNavigator().setAsCamera(globe, camera);
