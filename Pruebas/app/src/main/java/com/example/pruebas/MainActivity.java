@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        /** Parte del Menu lateral */
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        /**< PARTE PARA PROGRAMAR */
         /*
         CameraViewFragment camera = new CameraViewFragment();
         WorldWindow wwd = new CameraViewFragment().createWorldWindow(getApplicationContext());
@@ -57,7 +61,8 @@ public class MainActivity extends AppCompatActivity
         globeLayout.addView(wwd);
         */
         //camera.startMoving();
-        WorldWindow wwd = new WorldWindow(getApplicationContext());
+
+        WorldWindow wwd = new WorldWindow(getApplicationContext()); // Crear un nuevo mundo
         // ... and add some map layers
         wwd.getLayers().addLayer(new BackgroundLayer());
         wwd.getLayers().addLayer(new BlueMarbleLandsatLayer());
