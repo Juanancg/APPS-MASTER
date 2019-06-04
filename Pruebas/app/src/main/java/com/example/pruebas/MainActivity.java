@@ -28,7 +28,7 @@ import android.os.Handler;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    BasicGlobeFragment esfera = new BasicGlobeFragment();
+    BasicGlobeFragment worldGlobe = new BasicGlobeFragment();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -55,20 +55,20 @@ public class MainActivity extends AppCompatActivity
 
 
         /**< PARTE PARA PROGRAMAR */
-        WorldWindow wwd = esfera.createWorldWindow(getApplicationContext());
-        wwd.getLayers().addLayer(new BackgroundLayer());
-        wwd.getLayers().addLayer(new BlueMarbleLandsatLayer());
-        FrameLayout globeLayout = (FrameLayout) findViewById(R.id.globe);
+        WorldWindow wwd = worldGlobe.createWorldWindow(getApplicationContext());
+
+        FrameLayout globeLayout =  findViewById(R.id.globe);
         globeLayout.addView(wwd);
-        esfera.startMoving();
+
+        worldGlobe.startMoving();
 
 
     }
 
 
     public void onClick(View v){
-        esfera.move(13.0,60.0);
 
+        worldGlobe.goToISS();
     }
 
 

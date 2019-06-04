@@ -18,11 +18,17 @@ import android.widget.FrameLayout;
 
 import com.example.pruebas.APIRest.ISSHelper;
 import com.example.pruebas.APIRest.ISSLocService;
+import com.example.pruebas.R;
 
 import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.globe.BasicElevationCoverage;
+import gov.nasa.worldwind.globe.ElevationCoverage;
 import gov.nasa.worldwind.layer.BackgroundLayer;
 import gov.nasa.worldwind.layer.BlueMarbleLandsatLayer;
+import gov.nasa.worldwind.layer.RenderableLayer;
+import gov.nasa.worldwind.render.ImageSource;
+import gov.nasa.worldwind.shape.SurfaceImage;
 
 public class BasicGlobeFragment extends Fragment {
 
@@ -35,10 +41,14 @@ public class BasicGlobeFragment extends Fragment {
     Double longi = 0.0;
 
     /* Api Rest */
-    ISSHelper issHelper;
+    ISSHelper issHelper = new ISSHelper() ;
 
+    /* ICON ISS */
+    int ISSIconId = R.drawable.iss_icon;
+    Sector sectorISS = new Sector();
 
     public BasicGlobeFragment() {
+        issHelper.createObject();
     }
 
     /**
@@ -48,19 +58,52 @@ public class BasicGlobeFragment extends Fragment {
         // Create the WorldWindow (a GLSurfaceView) which displays the globe.
         //Context prueba = getContext();
         this.wwd = new WorldWindow(prueba);
+
+
         // Setup the WorldWindow's layers.
         this.wwd.getLayers().addLayer(new BackgroundLayer());
         this.wwd.getLayers().addLayer(new BlueMarbleLandsatLayer());
+
+
+
         // Setup the WorldWindow's elevation coverages.
         this.wwd.getGlobe().getElevationModel().addCoverage(new BasicElevationCoverage());
+        this.wwd.getNavigator().setAltitude(500000000);
         return this.wwd;
     }
 
+    /**
+     * Function that moves the view to the two parameters given
+     * @param latitude
+     * @param longitude
+     */
     public void move(Double latitude, Double longitude){
+
+        // To not delete nonexistent layer
+        if(this.wwd.getLayers().count() > 2){
+            this.wwd.getLayers().removeLayer(2);
+        }
+
+        // Configure a Surface Image to display an Android resource showing the iss logo.
+        sectorISS.set(latitude, longitude,7.5,7.5);
+        SurfaceImage surfaceImageResource = new SurfaceImage(sectorISS, ImageSource.fromResource(ISSIconId));
+        RenderableLayer issIconLayer = new RenderableLayer("Surface Image");
+        issIconLayer.addRenderable(surfaceImageResource);
+        this.wwd.getLayers().addLayer(issIconLayer);
 
         this.wwd.getNavigator().setLatitude(latitude);
         this.wwd.getNavigator().setLongitude(longitude);
         this.wwd.requestRedraw();
+    }
+
+    /**
+     * Hace una update a la API para obtener la localización de la ISS y mueve la vista a esa
+     * localización
+     */
+    public void goToISS(){
+
+        issHelper.realizarUpdate();
+        move(issHelper.getLatitude(), issHelper.getLongitude());
     }
 
     // Define the code block to be executed
@@ -68,11 +111,8 @@ public class BasicGlobeFragment extends Fragment {
         @Override
         public void run() {
             // Do something here on the main thread
-            longi = longi + 0.05;
-
-            move(lat, longi);
-
-            handler.postDelayed(this, 100);
+            goToISS();
+            handler.postDelayed(this, 3000);
         }
     };
 

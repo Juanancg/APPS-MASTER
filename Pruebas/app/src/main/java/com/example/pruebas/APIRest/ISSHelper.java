@@ -11,13 +11,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ISSHelper {
 
-    ISSLocService service;
+    private ISSLocService service;
 
-    double latitude = 0.0;
-    double longitude = 0.0;
-    double lastupdate = 0.0;
+    private double latitude = 0.0;
+    private double longitude = 0.0;
+    private String lastupdate = new String();
 
-    public ISSLocService createObject(){
+    public void createObject(){
         /**< 1- Crear objeto retrofit */
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -25,20 +25,20 @@ public class ISSHelper {
                 .addConverterFactory(GsonConverterFactory.create()) // Si no aĂ±adimos esto, devuelve un JSON de textos
                 .build();
         service = retrofit.create(ISSLocService.class);
-        return service;
+        realizarUpdate();
     }
 
     public double getLatitude(){ return latitude;}
 
     public double getLongitude(){ return longitude;}
 
-    public double getLastupdate(){ return lastupdate;}
+    public String getLastupdate(){ return lastupdate;}
 
     /**
      * Recupera un recurso y lo muestra en el TextView tvContenido
      *
      */
-    void realizarUpdate(ISSLocService service) {
+    public void realizarUpdate( /*ISSLocService service*/) {
 
         service.jsonISSLocation().enqueue(new Callback<ISSLocationResponse>() {
             @SuppressLint("WrongViewCast")
@@ -48,13 +48,9 @@ public class ISSHelper {
                 // Copiar el cuerpo de la respuesta a un Tipo ISSLocationResponse
                 ISSLocationResponse respuesta = response.body();
 
-
                 longitude = Double.parseDouble(respuesta.getIssPosition().getLongitude());
                 latitude = Double.parseDouble(respuesta.getIssPosition().getLatitude());
-                lastupdate = Double.parseDouble(respuesta.getTimestampFormatted());
-
-
-
+                lastupdate = respuesta.getTimestampFormatted();
 
             }
 
