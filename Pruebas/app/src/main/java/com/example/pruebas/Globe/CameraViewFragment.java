@@ -1,4 +1,4 @@
-package com.example.pruebas;
+package com.example.pruebas.Globe;
 
 import android.content.Context;
 import android.os.Handler;

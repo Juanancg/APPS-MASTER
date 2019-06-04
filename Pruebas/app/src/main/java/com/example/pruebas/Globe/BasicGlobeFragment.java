@@ -3,16 +3,21 @@
  * National Aeronautics and Space Administration. All Rights Reserved.
  */
 
-package com.example.pruebas;
+package com.example.pruebas.Globe;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import com.example.pruebas.APIRest.ISSHelper;
+import com.example.pruebas.APIRest.ISSLocService;
 
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.globe.BasicElevationCoverage;
@@ -22,6 +27,16 @@ import gov.nasa.worldwind.layer.BlueMarbleLandsatLayer;
 public class BasicGlobeFragment extends Fragment {
 
     private WorldWindow wwd;
+    // Create the Handler object (on the main thread by default)
+    Handler handler = new Handler();
+
+    /* Variables para controlar la posicion */
+    Double lat = 15.0;
+    Double longi = 0.0;
+
+    /* Api Rest */
+    ISSHelper issHelper;
+
 
     public BasicGlobeFragment() {
     }
@@ -41,13 +56,30 @@ public class BasicGlobeFragment extends Fragment {
         return this.wwd;
     }
 
-    public void move(){
+    public void move(Double latitude, Double longitude){
 
-        this.wwd.getNavigator().setLatitude(13.22);
-        this.wwd.getNavigator().setLongitude(61.10);
+        this.wwd.getNavigator().setLatitude(latitude);
+        this.wwd.getNavigator().setLongitude(longitude);
         this.wwd.requestRedraw();
     }
 
+    // Define the code block to be executed
+    private Runnable runnableCode = new Runnable() {
+        @Override
+        public void run() {
+            // Do something here on the main thread
+            longi = longi + 0.05;
+
+            move(lat, longi);
+
+            handler.postDelayed(this, 100);
+        }
+    };
+
+    public void startMoving() {
+        // Start the initial runnable task by posting through the handler
+        handler.post(runnableCode);
+    }
 
     /**
      * Gets the WorldWindow (GLSurfaceView) object.
@@ -58,9 +90,9 @@ public class BasicGlobeFragment extends Fragment {
 
     /**
      * Adds the WorldWindow to this Fragment's layout.
-     */
-    //@Nullable
-    //@Override
+
+    @Nullable
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_globe, container, false);
         FrameLayout globeLayout = (FrameLayout) rootView.findViewById(R.id.globe);

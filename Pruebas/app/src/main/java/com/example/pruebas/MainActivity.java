@@ -21,8 +21,9 @@ import android.widget.FrameLayout;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.layer.BackgroundLayer;
 import gov.nasa.worldwind.layer.BlueMarbleLandsatLayer;
-
+import com.example.pruebas.Globe.*;
 import android.os.Handler;
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,29 +55,19 @@ public class MainActivity extends AppCompatActivity
 
 
         /**< PARTE PARA PROGRAMAR */
-        /*
-        CameraViewFragment camera = new CameraViewFragment();
-        WorldWindow wwd = new CameraViewFragment().createWorldWindow(getApplicationContext());
-        FrameLayout globeLayout = (FrameLayout) findViewById(R.id.globe);
-        globeLayout.addView(wwd);
-        */
-        //camera.startMoving();
-
-
-
         WorldWindow wwd = esfera.createWorldWindow(getApplicationContext());
         wwd.getLayers().addLayer(new BackgroundLayer());
         wwd.getLayers().addLayer(new BlueMarbleLandsatLayer());
         FrameLayout globeLayout = (FrameLayout) findViewById(R.id.globe);
         globeLayout.addView(wwd);
-
+        esfera.startMoving();
 
 
     }
 
 
     public void onClick(View v){
-        esfera.move();
+        esfera.move(13.0,60.0);
 
     }
 

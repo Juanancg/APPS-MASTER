@@ -1,4 +1,4 @@
-package com.example.pruebas;
+package com.example.pruebas.Globe;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
