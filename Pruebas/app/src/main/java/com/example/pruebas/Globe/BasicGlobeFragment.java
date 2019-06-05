@@ -33,50 +33,63 @@ import gov.nasa.worldwind.shape.SurfaceImage;
 public class BasicGlobeFragment extends Fragment {
 
     private WorldWindow wwd;
-    // Create the Handler object (on the main thread by default)
-    Handler handler = new Handler();
 
-    /* Variables para controlar la posicion */
-    Double lat = 15.0;
-    Double longi = 0.0;
+    // Create the Handler object
+    private Handler handler = new Handler();
+
 
     /* Api Rest */
-    ISSHelper issHelper = new ISSHelper() ;
+    private ISSHelper issHelper = new ISSHelper() ;
 
     /* ICON ISS */
-    int ISSIconId = R.drawable.iss_icon;
-    Sector sectorISS = new Sector();
+    private int ISSIconId = R.drawable.iss_icon;
+    private Sector sectorISS = new Sector();
 
-    public BasicGlobeFragment() {
-        issHelper.createObject();
+    // Por defecto, el icono de Lock está activo
+    private Boolean isLockOption = Boolean.FALSE;
+
+
+
+    /******************************************************************************************//***
+     * Set the value of the variable that locks or not the camera to the ISS location
+     * @param value: TRUE if the lock option is choose, FALSE if not
+     **********************************************************************************************/
+    public void setIsLockOption(Boolean value){
+        isLockOption = value;
     }
 
     /**
-     * Creates a new WorldWindow (GLSurfaceView) object.
+     *  CONSTRUCTOR: Creates the ISSHelper
      */
-    public WorldWindow createWorldWindow(Context prueba) {
-        // Create the WorldWindow (a GLSurfaceView) which displays the globe.
-        //Context prueba = getContext();
-        this.wwd = new WorldWindow(prueba);
+    public BasicGlobeFragment() {
 
+        issHelper.createObject();
+    }
+
+    /******************************************************************************************//***
+     * Creates a new WorldWindow (GLSurfaceView) object.
+     **********************************************************************************************/
+    public WorldWindow createWorldWindow(Context prueba) {
+
+        // Create the WorldWindow (a GLSurfaceView) which displays the globe.
+        this.wwd = new WorldWindow(prueba);
 
         // Setup the WorldWindow's layers.
         this.wwd.getLayers().addLayer(new BackgroundLayer());
         this.wwd.getLayers().addLayer(new BlueMarbleLandsatLayer());
 
 
-
         // Setup the WorldWindow's elevation coverages.
         this.wwd.getGlobe().getElevationModel().addCoverage(new BasicElevationCoverage());
-        this.wwd.getNavigator().setAltitude(500000000);
+        this.wwd.getNavigator().setAltitude(20000000);
         return this.wwd;
     }
 
-    /**
+    /******************************************************************************************//***
      * Function that moves the view to the two parameters given
      * @param latitude
      * @param longitude
-     */
+     **********************************************************************************************/
     public void move(Double latitude, Double longitude){
 
         // To not delete nonexistent layer
@@ -84,29 +97,42 @@ public class BasicGlobeFragment extends Fragment {
             this.wwd.getLayers().removeLayer(2);
         }
 
+        moveISSicon(latitude, longitude);
+
+        if(isLockOption == Boolean.TRUE) {
+            this.wwd.getNavigator().setLatitude(latitude);
+            this.wwd.getNavigator().setLongitude(longitude);
+        }
+        this.wwd.requestRedraw();
+    }
+
+
+    /******************************************************************************************//***
+     *
+     * @param latitude
+     * @param longitude
+     **********************************************************************************************/
+    public void moveISSicon(Double latitude, Double longitude){
         // Configure a Surface Image to display an Android resource showing the iss logo.
         sectorISS.set(latitude, longitude,7.5,7.5);
         SurfaceImage surfaceImageResource = new SurfaceImage(sectorISS, ImageSource.fromResource(ISSIconId));
         RenderableLayer issIconLayer = new RenderableLayer("Surface Image");
         issIconLayer.addRenderable(surfaceImageResource);
         this.wwd.getLayers().addLayer(issIconLayer);
-
-        this.wwd.getNavigator().setLatitude(latitude);
-        this.wwd.getNavigator().setLongitude(longitude);
-        this.wwd.requestRedraw();
     }
 
-    /**
+    /******************************************************************************************//***
      * Hace una update a la API para obtener la localización de la ISS y mueve la vista a esa
      * localización
-     */
+     **********************************************************************************************/
     public void goToISS(){
-
         issHelper.realizarUpdate();
         move(issHelper.getLatitude(), issHelper.getLongitude());
     }
 
-    // Define the code block to be executed
+    /******************************************************************************************//***
+     *
+     **********************************************************************************************/
     private Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
@@ -116,46 +142,33 @@ public class BasicGlobeFragment extends Fragment {
         }
     };
 
+    /******************************************************************************************//***
+     *
+     **********************************************************************************************/
     public void startMoving() {
         // Start the initial runnable task by posting through the handler
         handler.post(runnableCode);
     }
 
-    /**
+    /******************************************************************************************//***
      * Gets the WorldWindow (GLSurfaceView) object.
-     */
+     **********************************************************************************************/
     public WorldWindow getWorldWindow() {
         return this.wwd;
     }
 
-    /**
-     * Adds the WorldWindow to this Fragment's layout.
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_globe, container, false);
-        FrameLayout globeLayout = (FrameLayout) rootView.findViewById(R.id.globe);
-
-        // Add the WorldWindow view object to the layout that was reserved for the globe.
-        Context prueba = getContext();
-        globeLayout.addView(this.createWorldWindow(prueba));
-
-        return rootView;
-    }
-
-    /**
+    /******************************************************************************************//***
      * Resumes the WorldWindow's rendering thread
-     */
+     **********************************************************************************************/
     @Override
     public void onResume() {
         super.onResume();
         this.wwd.onResume(); // resumes a paused rendering thread
     }
 
-    /**
+    /******************************************************************************************//***
      * Pauses the WorldWindow's rendering thread
-     */
+     **********************************************************************************************/
     @Override
     public void onPause() {
         super.onPause();
