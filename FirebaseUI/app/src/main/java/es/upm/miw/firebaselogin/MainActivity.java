@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.FrameLayout;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 // Firebase
 import com.firebase.ui.auth.AuthUI;
@@ -15,6 +16,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
+
+import es.upm.miw.firebaselogin.Globe.BasicGlobeFragment;
+import gov.nasa.worldwind.WorldWindow;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
@@ -25,12 +29,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     private static final int RC_SIGN_IN = 2018;
 
+    BasicGlobeFragment worldGlobe = new BasicGlobeFragment();
+
+    ToggleButton unlockButton;
+    Boolean isLockSelected = new Boolean(Boolean.FALSE);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.logoutButton).setOnClickListener(this);
+        //findViewById(R.id.logoutButton).setOnClickListener(this);
 
+        /** FIREBASE */
         mFirebaseAuth = FirebaseAuth.getInstance();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -41,7 +51,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     CharSequence username = user.getDisplayName();
                     Toast.makeText(MainActivity.this, getString(R.string.firebase_user_fmt, username), Toast.LENGTH_LONG).show();
                     Log.i(LOG_TAG, "onAuthStateChanged() " + getString(R.string.firebase_user_fmt, username));
-                    ((TextView) findViewById(R.id.textView)).setText(getString(R.string.firebase_user_fmt, username));
+                    //((TextView) findViewById(R.id.textView)).setText(getString(R.string.firebase_user_fmt, username));
                 } else {
                     // user is signed out
                     startActivityForResult(
@@ -59,6 +69,33 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
             }
         };
+
+        /**< Boton de ir a la ISS */
+        /*FloatingActionButton fab = findViewById(R.id.iss_locate_icon2);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                worldGlobe.goToISS(Boolean.TRUE);
+            }
+        });*/
+
+        /**< PARTE PARA PROGRAMAR */
+        WorldWindow wwd = worldGlobe.createWorldWindow(getApplicationContext());
+
+        FrameLayout globeLayout =  findViewById(R.id.globe);
+        globeLayout.addView(wwd);
+
+        worldGlobe.startMoving();
+
+        unlockButton = (ToggleButton) findViewById(R.id.unlockButton2); // initiate a toggle button
+        isLockSelected = unlockButton.isChecked(); // check current state of a toggle button (true or false)
+        unlockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                worldGlobe.setIsUnlockOption(unlockButton.isChecked());
+            }
+        });
     }
 
 
@@ -89,14 +126,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    /**
-     * Called when a view has been clicked.
-     *
-     * @param v The view that was clicked.
-     */
-    @Override
-    public void onClick(View v) {
-        mFirebaseAuth.signOut();
-        Log.i(LOG_TAG, getString(R.string.signed_out));
+
+    public void onClick(View v){
+
+        worldGlobe.goToISS(Boolean.TRUE);
     }
 }
