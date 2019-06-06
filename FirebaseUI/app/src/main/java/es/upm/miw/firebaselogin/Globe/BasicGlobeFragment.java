@@ -6,6 +6,7 @@
 package es.upm.miw.firebaselogin.Globe;
 
 import android.content.Context;
+
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 
@@ -21,6 +22,9 @@ import gov.nasa.worldwind.layer.RenderableLayer;
 import gov.nasa.worldwind.render.ImageSource;
 import gov.nasa.worldwind.shape.SurfaceImage;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 public class BasicGlobeFragment extends Fragment {
 
     private WorldWindow wwd;
@@ -164,5 +168,13 @@ public class BasicGlobeFragment extends Fragment {
     public void onPause() {
         super.onPause();
         this.wwd.onPause(); // pauses the rendering thread
+    }
+
+    /******************************************************************************************//***
+     *
+     **********************************************************************************************/
+    public void checkIoTLamp(){
+
+
     }
 }

@@ -75,7 +75,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
         };
 
-        /**< Boton de ir a la ISS */
 
 
         /**< PARTE PARA PROGRAMAR */
@@ -97,7 +96,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
         });
 
-        /**< BULB BUTTON */
 
     }
 
@@ -115,12 +113,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
 
-
-
     public void onClick(View v){
-
         worldGlobe.goToISS(Boolean.TRUE);
     }
+
 
     public void onClickLampara(View v){
 
@@ -128,13 +124,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
         startActivityForResult(intent, LamparaActivity.ACTIVITY_ID); // Para delvolver el id de la actividad que esta esperando
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode){
-            case LamparaActivity.ACTIVITY_ID:
 
+            /** ACTIVITY DE LAMPARA  */
+
+            case LamparaActivity.ACTIVITY_ID:
 
                 SharedPreferences sp = getSharedPreferences("Datos", MODE_PRIVATE);
 
@@ -144,6 +143,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                 break;
 
+                /** FIREBASE */
             case RC_SIGN_IN:
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(this, R.string.signed_in, Toast.LENGTH_SHORT).show();
