@@ -46,7 +46,7 @@ public class BasicGlobeFragment extends Fragment {
     private Sector sectorISS = new Sector();
 
     // Por defecto, el icono de Lock está activo
-    private Boolean isLockOption = Boolean.FALSE;
+    private Boolean isUnlockOption = Boolean.FALSE;
 
 
 
@@ -54,8 +54,8 @@ public class BasicGlobeFragment extends Fragment {
      * Set the value of the variable that locks or not the camera to the ISS location
      * @param value: TRUE if the lock option is choose, FALSE if not
      **********************************************************************************************/
-    public void setIsLockOption(Boolean value){
-        isLockOption = value;
+    public void setIsUnlockOption(Boolean value){
+        isUnlockOption = value;
     }
 
     /**
@@ -90,7 +90,7 @@ public class BasicGlobeFragment extends Fragment {
      * @param latitude
      * @param longitude
      **********************************************************************************************/
-    public void move(Double latitude, Double longitude){
+    public void move(Double latitude, Double longitude, Boolean buttonClicked){
 
         // To not delete nonexistent layer
         if(this.wwd.getLayers().count() > 2){
@@ -99,7 +99,7 @@ public class BasicGlobeFragment extends Fragment {
 
         moveISSicon(latitude, longitude);
 
-        if(isLockOption == Boolean.TRUE) {
+        if(isUnlockOption == Boolean.FALSE || buttonClicked == Boolean.TRUE) {
             this.wwd.getNavigator().setLatitude(latitude);
             this.wwd.getNavigator().setLongitude(longitude);
         }
@@ -125,9 +125,9 @@ public class BasicGlobeFragment extends Fragment {
      * Hace una update a la API para obtener la localización de la ISS y mueve la vista a esa
      * localización
      **********************************************************************************************/
-    public void goToISS(){
+    public void goToISS(Boolean buttonClicked){
         issHelper.realizarUpdate();
-        move(issHelper.getLatitude(), issHelper.getLongitude());
+        move(issHelper.getLatitude(), issHelper.getLongitude(), buttonClicked);
     }
 
     /******************************************************************************************//***
@@ -137,7 +137,7 @@ public class BasicGlobeFragment extends Fragment {
         @Override
         public void run() {
             // Do something here on the main thread
-            goToISS();
+            goToISS(Boolean.FALSE);
             handler.postDelayed(this, 3000);
         }
     };

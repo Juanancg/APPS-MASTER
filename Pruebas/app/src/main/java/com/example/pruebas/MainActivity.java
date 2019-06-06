@@ -1,10 +1,8 @@
 package com.example.pruebas;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
@@ -19,32 +17,38 @@ import android.view.Menu;
 import android.widget.FrameLayout;
 
 import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.layer.BackgroundLayer;
-import gov.nasa.worldwind.layer.BlueMarbleLandsatLayer;
 import com.example.pruebas.Globe.*;
-import android.os.Handler;
+import android.widget.ToggleButton;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     BasicGlobeFragment worldGlobe = new BasicGlobeFragment();
+
+    ToggleButton unlockButton;
+    Boolean isLockSelected = new Boolean(Boolean.FALSE);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        /** Parte del Menu lateral */
+
+        /**< Parte del Menu lateral */
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = findViewById(R.id.fab);
+
+
+        /**< Boton de ir a la ISS */
+        FloatingActionButton fab = findViewById(R.id.iss_locate_icon2);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                worldGlobe.goToISS(Boolean.TRUE);
             }
         });
+
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -62,13 +66,22 @@ public class MainActivity extends AppCompatActivity
 
         worldGlobe.startMoving();
 
+        unlockButton = (ToggleButton) findViewById(R.id.unlockButton2); // initiate a toggle button
+        isLockSelected = unlockButton.isChecked(); // check current state of a toggle button (true or false)
+        unlockButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                worldGlobe.setIsUnlockOption(unlockButton.isChecked());
+            }
+        });
 
     }
 
 
     public void onClick(View v){
 
-        worldGlobe.goToISS();
+        worldGlobe.goToISS(Boolean.TRUE);
     }
 
 
