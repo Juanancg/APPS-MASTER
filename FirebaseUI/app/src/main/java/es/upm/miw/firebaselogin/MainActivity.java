@@ -2,8 +2,10 @@ package es.upm.miw.firebaselogin;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -34,11 +36,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
     ToggleButton unlockButton;
     Boolean isLockSelected = new Boolean(Boolean.FALSE);
 
+    ToggleButton bulbButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //findViewById(R.id.logoutButton).setOnClickListener(this);
+
 
         /** FIREBASE */
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -64,20 +69,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                     )).
                                     setIsSmartLockEnabled(!BuildConfig.DEBUG /* credentials */, true /* hints */).
                                     build(),
-                                    RC_SIGN_IN
+                            RC_SIGN_IN
                     );
                 }
             }
         };
 
         /**< Boton de ir a la ISS */
-        /*FloatingActionButton fab = findViewById(R.id.iss_locate_icon2);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                worldGlobe.goToISS(Boolean.TRUE);
-            }
-        });*/
+
 
         /**< PARTE PARA PROGRAMAR */
         WorldWindow wwd = worldGlobe.createWorldWindow(getApplicationContext());
@@ -87,6 +86,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         worldGlobe.startMoving();
 
+        /**< LOCK/UNLOCK BUTTON */
         unlockButton = (ToggleButton) findViewById(R.id.unlockButton2); // initiate a toggle button
         isLockSelected = unlockButton.isChecked(); // check current state of a toggle button (true or false)
         unlockButton.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +96,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 worldGlobe.setIsUnlockOption(unlockButton.isChecked());
             }
         });
+
+        /**< BULB BUTTON */
+
     }
 
 
@@ -111,24 +114,46 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) {
-                Toast.makeText(this, R.string.signed_in, Toast.LENGTH_SHORT).show();
-                Log.i(LOG_TAG, "onActivityResult " + getString(R.string.signed_in));
-            } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, R.string.signed_cancelled, Toast.LENGTH_SHORT).show();
-                Log.i(LOG_TAG, "onActivityResult " + getString(R.string.signed_cancelled));
-                finish();
-            }
-        }
-    }
+
 
 
     public void onClick(View v){
 
         worldGlobe.goToISS(Boolean.TRUE);
+    }
+
+    public void onClickLampara(View v){
+
+        Intent intent = new Intent(this, LamparaActivity.class);
+        startActivityForResult(intent, LamparaActivity.ACTIVITY_ID); // Para delvolver el id de la actividad que esta esperando
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            case LamparaActivity.ACTIVITY_ID:
+
+
+                SharedPreferences sp = getSharedPreferences("Datos", MODE_PRIVATE);
+
+                // Poner el icono de la lampara con el estado que tenga
+                ToggleButton bulbButton = (ToggleButton) findViewById(R.id.bulbButton);
+                bulbButton.setChecked(!sp.getBoolean("lampara_on",false));
+
+                break;
+
+            case RC_SIGN_IN:
+                if (resultCode == RESULT_OK) {
+                    Toast.makeText(this, R.string.signed_in, Toast.LENGTH_SHORT).show();
+                    Log.i(LOG_TAG, "onActivityResult " + getString(R.string.signed_in));
+                } else if (resultCode == RESULT_CANCELED) {
+                    Toast.makeText(this, R.string.signed_cancelled, Toast.LENGTH_SHORT).show();
+                    Log.i(LOG_TAG, "onActivityResult " + getString(R.string.signed_cancelled));
+                    finish();
+                }
+        }
+
     }
 }

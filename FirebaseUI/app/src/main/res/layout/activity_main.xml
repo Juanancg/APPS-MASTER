@@ -50,10 +50,9 @@
         app:layout_anchorGravity="bottom|center"
         app:layout_constraintBottom_toBottomOf="@+id/iss_locate_icon2"
         app:layout_constraintEnd_toStartOf="@+id/iss_locate_icon2"
-        app:layout_constraintHorizontal_bias="0.924"
+        app:layout_constraintHorizontal_bias="0.899"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/iss_locate_icon2"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="@+id/iss_locate_icon2" />
 
     <ToggleButton
         android:id="@+id/bulbButton"
@@ -68,13 +67,15 @@
         android:background="@drawable/bulb"
         android:focusable="false"
         android:focusableInTouchMode="false"
+        android:onClick="onClickLampara"
         android:textOff=""
         android:textOn=""
         app:layout_anchorGravity="bottom|center"
-        app:layout_constraintBottom_toBottomOf="@+id/iss_locate_icon2"
-        app:layout_constraintEnd_toStartOf="@+id/unlockButton2"
-        app:layout_constraintHorizontal_bias="0.899"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/globe"
+        app:layout_constraintHorizontal_bias="0.022"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/iss_locate_icon2" />
+        app:layout_constraintTop_toTopOf="@+id/globe"
+        app:layout_constraintVertical_bias="0.012" />
 
 </android.support.constraint.ConstraintLayout>
