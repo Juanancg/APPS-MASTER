@@ -106,17 +106,4 @@ public class LamparaActivity extends Activity {
         finish();
     }
 
-    @Override
-    protected void onDestroy() {
-
-        Intent intent = new Intent();
-        intent.putExtra("latitude",
-                (position[0]));
-        intent.putExtra("longitude",
-                (position[1]));
-
-        setResult(RESULT_OK, intent); // Valor a devolver
-        finish();
-        super.onDestroy();
-    }
 }
