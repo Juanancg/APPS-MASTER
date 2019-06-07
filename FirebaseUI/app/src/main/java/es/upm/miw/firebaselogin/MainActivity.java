@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -20,6 +21,9 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Arrays;
 
 import es.upm.miw.firebaselogin.Globe.BasicGlobeFragment;
+import es.upm.miw.firebaselogin.fcube.commands.FCColor;
+import es.upm.miw.firebaselogin.fcube.config.FeedbackCubeConfig;
+import es.upm.miw.firebaselogin.fcube.config.FeedbackCubeManager;
 import gov.nasa.worldwind.WorldWindow;
 
 public class MainActivity extends Activity implements View.OnClickListener {
@@ -35,8 +39,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     ToggleButton unlockButton;
     Boolean isLockSelected = new Boolean(Boolean.FALSE);
+    Boolean isLampSelected = new Boolean(Boolean.FALSE);
 
-    ToggleButton bulbButton;
+    // Create the Handler object
+    private Handler handler = new Handler();
+
+    Double latitude = new Double(0.0);
+    Double longitude = new Double(0.0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +92,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         FrameLayout globeLayout =  findViewById(R.id.globe);
         globeLayout.addView(wwd);
 
-        worldGlobe.startMoving();
+        startMoving();
 
         /**< LOCK/UNLOCK BUTTON */
         unlockButton = (ToggleButton) findViewById(R.id.unlockButton2); // initiate a toggle button
@@ -97,6 +106,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         });
 
 
+        /**< BULB BUTTON */
+        SharedPreferences sp = getSharedPreferences("Datos", MODE_PRIVATE);
+
+        // Poner el icono de la lampara con el estado que tenga
+        ToggleButton bulbButton = (ToggleButton) findViewById(R.id.bulbButton);
+        bulbButton.setChecked(!sp.getBoolean("lampara_on",false));
     }
 
 
@@ -140,10 +155,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 // Poner el icono de la lampara con el estado que tenga
                 ToggleButton bulbButton = (ToggleButton) findViewById(R.id.bulbButton);
                 bulbButton.setChecked(!sp.getBoolean("lampara_on",false));
+                isLampSelected = sp.getBoolean("lampara_on",false);
+
+                latitude = data.getDoubleExtra("latitude",0.0);
+                longitude = data.getDoubleExtra("longitude",0.0);
+
 
                 break;
 
-                /** FIREBASE */
+            /** FIREBASE */
             case RC_SIGN_IN:
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(this, R.string.signed_in, Toast.LENGTH_SHORT).show();
@@ -156,4 +176,45 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
 
     }
+
+    /******************************************************************************************//***
+     *
+     **********************************************************************************************/
+    private Runnable runnableCode = new Runnable() {
+                @Override
+                public void run() {
+                    // Do something here on the main thread
+
+                    worldGlobe.goToISS(Boolean.FALSE);
+
+                    if(isLampSelected == Boolean.TRUE){
+                        if(latitude != 0.0 && longitude != 0.0){
+
+                            if(worldGlobe.checkDiferencia(latitude, longitude, 80.0)){
+
+                                Log.e("POST","Blue");
+                                FCColor fcc = new FCColor(FeedbackCubeConfig.getSingleInstance().getIp(), "2", "136", "209");
+                                new FeedbackCubeManager().execute(fcc);
+
+                            } else{
+
+                                Log.e("POST","Grey");
+                                FCColor fcc = new FCColor(FeedbackCubeConfig.getSingleInstance().getIp(), "38", "50", "56");
+                                new FeedbackCubeManager().execute(fcc);
+                            }
+
+                        }
+                    }
+                    handler.postDelayed(this, 3000);
+                }
+            };
+
+    /******************************************************************************************//***
+     *
+     **********************************************************************************************/
+    public void startMoving() {
+        // Start the initial runnable task by posting through the handler
+        handler.post(runnableCode);
+    }
+
 }

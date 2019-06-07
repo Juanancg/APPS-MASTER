@@ -22,15 +22,13 @@ import gov.nasa.worldwind.layer.RenderableLayer;
 import gov.nasa.worldwind.render.ImageSource;
 import gov.nasa.worldwind.shape.SurfaceImage;
 
-import static android.content.Context.MODE_PRIVATE;
 
-import android.content.SharedPreferences;
 public class BasicGlobeFragment extends Fragment {
 
     private WorldWindow wwd;
 
-    // Create the Handler object
-    private Handler handler = new Handler();
+    Double latitudeISS = new Double(0.0);
+    Double longitudeISS = new Double(0.0);
 
 
     /* Api Rest */
@@ -122,28 +120,11 @@ public class BasicGlobeFragment extends Fragment {
      **********************************************************************************************/
     public void goToISS(Boolean buttonClicked){
         issHelper.realizarUpdate();
-        move(issHelper.getLatitude(), issHelper.getLongitude(), buttonClicked);
+        latitudeISS = issHelper.getLatitude();
+        longitudeISS = issHelper.getLongitude();
+        move(latitudeISS, longitudeISS, buttonClicked);
     }
 
-    /******************************************************************************************//***
-     *
-     **********************************************************************************************/
-    private Runnable runnableCode = new Runnable() {
-        @Override
-        public void run() {
-            // Do something here on the main thread
-            goToISS(Boolean.FALSE);
-            handler.postDelayed(this, 3000);
-        }
-    };
-
-    /******************************************************************************************//***
-     *
-     **********************************************************************************************/
-    public void startMoving() {
-        // Start the initial runnable task by posting through the handler
-        handler.post(runnableCode);
-    }
 
     /******************************************************************************************//***
      * Gets the WorldWindow (GLSurfaceView) object.
@@ -173,8 +154,31 @@ public class BasicGlobeFragment extends Fragment {
     /******************************************************************************************//***
      *
      **********************************************************************************************/
-    public void checkIoTLamp(){
+    public Boolean checkDiferencia(Double latitude1, Double longitude1, Double diff){
 
-
+        if (distanciaCoord(latitude1, longitude1, latitudeISS, longitudeISS) <= diff) {
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
     }
+
+    /******************************************************************************************//***
+     *
+     **********************************************************************************************/
+    public static double distanciaCoord(double lat1, double lng1, double lat2, double lng2) {
+        double radioTierra = 6371;//en kilómetros
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+        double va1 = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+        double va2 = 2 * Math.atan2(Math.sqrt(va1), Math.sqrt(1 - va1));
+        double distancia = radioTierra * va2;
+
+        return distancia;
+    }
+
+
 }

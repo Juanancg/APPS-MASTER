@@ -34,8 +34,7 @@ public class LamparaActivity extends Activity {
     private Handler handler = new Handler();
 
     Boolean isCheckedGlobal = Boolean.FALSE;
-    Double longitude;
-    Double latitude;
+    Double[] position = new Double[]{0.0,0.0}; // 1 Latitude, 2 Longitude
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +62,7 @@ public class LamparaActivity extends Activity {
                 // Para guardar los datos en el SharedPreferences
                 e.commit();
 
-
-                /** CHECKEAR LAS POSICIONES */
-
-                if (isChecked == Boolean.TRUE) {
-
+                if(isChecked == Boolean.TRUE){
                     requestPermission();
                     client = LocationServices.getFusedLocationProviderClient(LamparaActivity.this);
 
@@ -81,19 +76,13 @@ public class LamparaActivity extends Activity {
 
 
                             if (location != null) {
-
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-
-
-
+                                position[0] = location.getLatitude();
+                                position[1] = location.getLongitude();
                             }
                         }
                     });
-
-
                 }
-            }
+                }
         });
 
 
@@ -105,6 +94,29 @@ public class LamparaActivity extends Activity {
     }
 
 
+    public void onOkClicked(View v){
 
+        Intent intent = new Intent();
+        intent.putExtra("latitude",
+                (position[0]));
+        intent.putExtra("longitude",
+                (position[1]));
 
+        setResult(RESULT_OK, intent); // Valor a devolver
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        Intent intent = new Intent();
+        intent.putExtra("latitude",
+                (position[0]));
+        intent.putExtra("longitude",
+                (position[1]));
+
+        setResult(RESULT_OK, intent); // Valor a devolver
+        finish();
+        super.onDestroy();
+    }
 }
